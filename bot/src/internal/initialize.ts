@@ -31,4 +31,5 @@ adapter.onTurnError = async (context: TurnContext, error: Error) => {
   await context.sendActivity("To continue to run this bot, please fix the bot source code.");
 };
 
+BotNotification.InitializeNotification(adapter);
 BotNotification.InitializeCommandResponse(adapter, [ new WelcomeCommandHandler() ])
