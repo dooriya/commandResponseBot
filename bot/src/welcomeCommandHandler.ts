@@ -7,7 +7,7 @@ export class WelcomeCommandHandler implements TeamsFxCommandHandler {
     commandTextPattern?: RegExp;
 
     async handleCommandReceived(context: TurnContext, commandText: string): Promise<any> {
-        // verify the command arguments which is received from the client if needed.
+        // parse/verify the command arguments which is received from the client if needed.
 
         // do something to process your command and return an adaptive card or a text message.
         return welcomeCard;

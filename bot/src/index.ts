@@ -1,7 +1,7 @@
 // Create HTTP server.
 import { TeamsActivityHandler } from "botbuilder";
 import * as restify from "restify";
-import { adapter } from "./internals/initialize";
+import { adapter } from "./internal/initialize";
 
 // Create HTTP server.
 const server = restify.createServer();
