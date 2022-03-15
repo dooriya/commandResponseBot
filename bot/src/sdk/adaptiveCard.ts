@@ -1,8 +1,6 @@
 import { Activity, CardFactory, StatusCodes } from "botbuilder";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 
-export type AdaptiveCard = any;
-
 /**
  * Utility method to convert the message data to adaptive card for bot framework.
  * @param getCardData Function to prepare your card data.
@@ -25,7 +23,7 @@ export function buildBotMessage<TData>(getCardData: () => TData, cardTemplate: a
 /**
  * Utility method to build adaptive card bot message without user data
  */
- export function buildBotMessageWithCard(card: any): Partial<Activity> {
+ export function buildBotMessageWithoutData(card: any): Partial<Activity> {
   // Wrap the message in adaptive card
   return {
     attachments: [
@@ -42,7 +40,7 @@ export function buildBotMessage<TData>(getCardData: () => TData, cardTemplate: a
  * @param cardTemplate The adaptive card template.
  * @returns An adaptive card object.
  */
-export function buildAdaptiveCard<TData>(getCardData: () => TData, cardTemplate: any): Partial<Activity> {
+export function buildAdaptiveCard<TData>(getCardData: () => TData, cardTemplate: any): any {
   return AdaptiveCards.declare<TData>(cardTemplate).render(getCardData())
 }
 
@@ -51,7 +49,7 @@ export function buildAdaptiveCard<TData>(getCardData: () => TData, cardTemplate:
  * @param card The adaptive card JSON.
  * @returns An adaptive card object.
  */
-export function buildAdaptiveCardWithoutData(card: any): Partial<Activity> {
+export function buildAdaptiveCardWithoutData(card: any): any {
   return AdaptiveCards.declareWithoutData(card).render();
 }
 

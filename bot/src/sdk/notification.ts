@@ -3,7 +3,7 @@ import { LocalFileStorage } from "./fileStorage";
 import { CommandResponseMiddleware, NotificationMiddleware } from "./middleware";
 import { ConversationReferenceStore } from "./store";
 import { TeamsBotInstallation } from "./context";
-import { TeamsFxCommandHandler } from "./commandHandler";
+import { TeamsFxBotCommandHandler } from "./interface";
 
 export interface BotNotificationOptions {
     /**
@@ -27,7 +27,7 @@ export class BotNotification {
         }));
     }
 
-    public static InitializeCommandResponse(connector: BotFrameworkAdapter, commandHandlers: TeamsFxCommandHandler[]) {
+    public static InitializeCommandResponse(connector: BotFrameworkAdapter, commandHandlers: TeamsFxBotCommandHandler[]) {
         this.adapter = connector.use(new CommandResponseMiddleware(commandHandlers));
     }
 

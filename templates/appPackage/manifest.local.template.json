@@ -42,8 +42,8 @@
                     ],
                     "commands": [
                         {
-                            "title": "welcome",
-                            "description": "Resend welcome card of this Bot"
+                            "title": "help",
+                            "description": "help command to get you started"
                         }
                     ]
                 }

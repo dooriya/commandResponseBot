@@ -2,7 +2,7 @@
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
 import { BotNotification } from "../sdk/notification";
-import { WelcomeCommandHandler } from "../welcomeCommandHandler";
+import { HelpCommandHandler } from "../helpCommandHandler";
 
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
 export const adapter = new BotFrameworkAdapter({
@@ -32,4 +32,4 @@ adapter.onTurnError = async (context: TurnContext, error: Error) => {
 };
 
 BotNotification.InitializeNotification(adapter);
-BotNotification.InitializeCommandResponse(adapter, [ new WelcomeCommandHandler() ])
+BotNotification.InitializeCommandResponse(adapter, [ new HelpCommandHandler() ])

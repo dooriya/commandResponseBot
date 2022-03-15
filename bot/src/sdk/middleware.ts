@@ -1,6 +1,6 @@
 import { Activity, Middleware, TurnContext } from "botbuilder";
-import { buildBotMessageWithCard } from "./adaptiveCard";
-import { TeamsFxCommandHandler } from "./commandHandler";
+import { buildBotMessageWithoutData } from "./adaptiveCard";
+import { TeamsFxBotCommandHandler } from "./interface";
 import { ConversationReferenceStore } from "./store";
 
 export interface NotificationMiddlewareOptions {
@@ -56,15 +56,15 @@ export class NotificationMiddleware implements Middleware {
 }
 
 export class CommandResponseMiddleware implements Middleware {
-    private readonly commandHandlers: TeamsFxCommandHandler[];
+    private readonly commandHandlers: TeamsFxBotCommandHandler[];
 
-    constructor(commandHandlers: TeamsFxCommandHandler[]) {
+    constructor(commandHandlers: TeamsFxBotCommandHandler[]) {
         this.commandHandlers = commandHandlers;
     }
 
     public async onTurn(context: TurnContext, next: () => Promise<void>): Promise<void> {
         const type = this.classifyActivity(context.activity);
-        let handlers: TeamsFxCommandHandler[] = [];
+        let handlers: TeamsFxBotCommandHandler[] = [];
         switch (type) {
             case ActivityType.CommandReceived:
                 // Invoke corresponding command handler for the command response
@@ -79,7 +79,7 @@ export class CommandResponseMiddleware implements Middleware {
                     if (typeof reply === 'string') {
                         await context.sendActivity(reply);
                     } else {
-                        const botMessage = buildBotMessageWithCard(reply);
+                        const botMessage = buildBotMessageWithoutData(reply);
                         await context.sendActivity(botMessage);
                     }                  
                 }
