@@ -40,7 +40,11 @@
                         "team",
                         "groupchat"
                     ],
-                    "commands": [
+                    "commands": [                        
+                        {
+                            "title": "helloWorld",
+                            "description": "A helloworld command to send a welcome message"
+                        },
                         {
                             "title": "help",
                             "description": "help command to get you started"

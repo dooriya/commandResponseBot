@@ -1,21 +1,21 @@
 import { TurnContext } from "botbuilder";
-import helpCard from "./adaptiveCards/help-command.json"
+import helpCard from "./adaptiveCards/helpCommand.json"
 import { buildAdaptiveCard } from "./sdk/adaptiveCard";
-import { TeamsFxBotCommandHandler } from "./sdk/interface";
+import { BotMessage, CardMessage, Json, TeamsCardType, TeamsFxBotCommandHandler } from "./sdk/interface";
 
 export interface HelpCardData {
     items: string[]
 }
 
 export class HelpCommandHandler implements TeamsFxBotCommandHandler {
-    commandName?: string = "help";
-    commandTextPattern?: RegExp;
+    commandNameOrPattern: string | RegExp = "help";
 
-    async handleCommandReceived(context: TurnContext, commandText: string): Promise<any> {
-        // verify the command arguments which is received from the client if needed.
+    async handleCommandReceived(context: TurnContext, commandText: string): Promise<BotMessage> {
+        // verify the command arguments which are received from the client if needed.
 
         // do something to process your command and return an adaptive card or a text message.
-        const card = buildAdaptiveCard<{ items: string[] }>(() => {
+
+        const card = buildAdaptiveCard<HelpCardData>(() => {
             return {
                 items: [
                     '- List my ToDo items: **list**',
@@ -26,6 +26,9 @@ export class HelpCommandHandler implements TeamsFxBotCommandHandler {
             }
         }, helpCard);
 
-        return card;
+        return {
+            cardType: TeamsCardType.AdaptiveCard,
+            content: card
+        };
     }
 }
