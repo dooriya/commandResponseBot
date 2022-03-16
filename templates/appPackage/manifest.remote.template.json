@@ -42,12 +42,12 @@
                     ],
                     "commands": [
                         {
-                            "title": "welcome",
-                            "description": "Resend welcome card of this Bot"
+                            "title": "helloWorld",
+                            "description": "A helloworld command to send a welcome message"
                         },
                         {
-                            "title": "learn",
-                            "description": "Learn about Adaptive Card and Bot Command"
+                            "title": "help",
+                            "description": "help command to get you started"
                         }
                     ]
                 }

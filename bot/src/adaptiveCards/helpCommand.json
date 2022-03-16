@@ -1,0 +1,49 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.4",
+    "body": [
+      {
+        "type": "TextBlock",
+        "text": "Your Hello World Bot is Running",
+        "size": "Large",
+        "weight": "Bolder",
+        "wrap": true
+      },
+      {
+        "type": "TextBlock",
+        "text": "Congratulations! Your hello world bot is running. Here are some common commands to get you started.",
+        "isSubtle": true,
+        "wrap": true
+      },
+      {
+        "$data": "${items}",
+        "type": "Container",
+        "items": [
+          {
+            "type": "ColumnSet",
+            "columns": [
+              {
+                "type": "Column",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "${$data}",
+                    "wrap": true
+                  }
+                ],
+                "width": "stretch"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "Action.OpenUrl",
+        "title": "Go to Help",
+        "url": "https://aka.ms/teamsfx-docs"
+      }
+    ]
+  }

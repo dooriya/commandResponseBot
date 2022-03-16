@@ -1,6 +1,5 @@
 import { Activity, Middleware, TurnContext } from "botbuilder";
-import { buildBotMessageWithCard } from "./adaptiveCard";
-import { TeamsFxCommandHandler } from "./commandHandler";
+import { CardMessage, isCardMessage, TeamsFxBotCommandHandler } from "./interface";
 import { ConversationReferenceStore } from "./store";
 
 export interface NotificationMiddlewareOptions {
@@ -56,32 +55,40 @@ export class NotificationMiddleware implements Middleware {
 }
 
 export class CommandResponseMiddleware implements Middleware {
-    private readonly commandHandlers: TeamsFxCommandHandler[];
+    private readonly commandHandlers: TeamsFxBotCommandHandler[];
 
-    constructor(commandHandlers: TeamsFxCommandHandler[]) {
+    constructor(commandHandlers: TeamsFxBotCommandHandler[]) {
         this.commandHandlers = commandHandlers;
     }
 
     public async onTurn(context: TurnContext, next: () => Promise<void>): Promise<void> {
         const type = this.classifyActivity(context.activity);
-        let handlers: TeamsFxCommandHandler[] = [];
+        let handlers: TeamsFxBotCommandHandler[] = [];
         switch (type) {
             case ActivityType.CommandReceived:
                 // Invoke corresponding command handler for the command response
                 const commandText = this.getActivityText(context.activity);
-
-                handlers = this.commandHandlers.filter(handler => {
-                    return handler.commandTextPattern?.test(commandText) || handler.commandName === commandText;             
-                });
+                handlers = this.filterCommandHandler(commandText, this.commandHandlers);
 
                 if (handlers.length > 0) {
-                    const reply = await handlers[0].handleCommandReceived(context, commandText);
-                    if (typeof reply === 'string') {
-                        await context.sendActivity(reply);
-                    } else {
-                        const botMessage = buildBotMessageWithCard(reply);
+                    const response = await handlers[0].handleCommandReceived(context, commandText);
+
+                    if (typeof response === 'string') {
+                        await context.sendActivity(response);
+                    } else if (isCardMessage(response)) {
+                        //const botMessage = buildBotMessageWithoutData(response);
+                        const cardMessage = response as CardMessage; 
+                        const botMessage: Partial<Activity> = {
+                            attachments: [{
+                                contentType: cardMessage.cardType,
+                                content: cardMessage.content
+                            }]
+                        }
+
                         await context.sendActivity(botMessage);
-                    }                  
+                    } else {
+                        await context.sendActivity(response);   
+                    }
                 }
                 break;
             default:
@@ -102,13 +109,23 @@ export class CommandResponseMiddleware implements Middleware {
     private isCommandReceived(activity: Activity): boolean {
         if (this.commandHandlers) {
             let commandText = this.getActivityText(activity);
-            const handlers = this.commandHandlers.filter(handler => {
-                return handler.commandTextPattern?.test(commandText) || handler.commandName === commandText;             
-            });
+            const handlers = this.filterCommandHandler(commandText, this.commandHandlers);
             return handlers.length > 0;
         } else {
             return false;
         }
+    }
+
+    private filterCommandHandler(commandText: string, commandHandlers: TeamsFxBotCommandHandler[]) {
+        const handlers = commandHandlers.filter(handler => {
+            if (typeof handler.commandNameOrPattern === 'string') {
+                return handler.commandNameOrPattern.toLocaleLowerCase() === commandText;
+            } else {
+                return handler.commandNameOrPattern?.test(commandText)
+            }                                
+        });
+
+        return handlers;
     }
 
     private getActivityText(activity: Activity): string {
