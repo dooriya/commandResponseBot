@@ -1,5 +1,5 @@
 import { Activity, Middleware, TurnContext } from "botbuilder";
-import { CardMessage, isCardMessage, TeamsFxBotCommandHandler } from "./interface";
+import { TeamsFxBotCommandHandler } from "./interface";
 import { ConversationReferenceStore } from "./store";
 
 export interface NotificationMiddlewareOptions {
@@ -55,15 +55,18 @@ export class NotificationMiddleware implements Middleware {
 }
 
 export class CommandResponseMiddleware implements Middleware {
-    private readonly commandHandlers: TeamsFxBotCommandHandler[];
+    private commandHandlers: TeamsFxBotCommandHandler[] = [];
 
-    constructor(commandHandlers: TeamsFxBotCommandHandler[]) {
-        this.commandHandlers = commandHandlers;
+    constructor(handlers?: TeamsFxBotCommandHandler[]) {
+        if (handlers && handlers.length > 0) {
+            this.commandHandlers.push(...handlers);
+        }       
     }
 
     public async onTurn(context: TurnContext, next: () => Promise<void>): Promise<void> {
         const type = this.classifyActivity(context.activity);
         let handlers: TeamsFxBotCommandHandler[] = [];
+
         switch (type) {
             case ActivityType.CommandReceived:
                 // Invoke corresponding command handler for the command response
@@ -72,23 +75,7 @@ export class CommandResponseMiddleware implements Middleware {
 
                 if (handlers.length > 0) {
                     const response = await handlers[0].handleCommandReceived(context, commandText);
-
-                    if (typeof response === 'string') {
-                        await context.sendActivity(response);
-                    } else if (isCardMessage(response)) {
-                        //const botMessage = buildBotMessageWithoutData(response);
-                        const cardMessage = response as CardMessage; 
-                        const botMessage: Partial<Activity> = {
-                            attachments: [{
-                                contentType: cardMessage.cardType,
-                                content: cardMessage.content
-                            }]
-                        }
-
-                        await context.sendActivity(botMessage);
-                    } else {
-                        await context.sendActivity(response);   
-                    }
+                    await context.sendActivity(response);
                 }
                 break;
             default:
