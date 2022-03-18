@@ -1,18 +1,17 @@
-import { TurnContext } from "botbuilder";
-import helloWorldCard from "./adaptiveCards/helloworldCommand.json"
-import { BotMessage, TeamsCardType, TeamsFxBotCommandHandler } from "./sdk/interface";
-
+import { Activity, TurnContext } from "botbuilder";
+import { TeamsFxBotCommandHandler } from "./sdk/interface";
+import helloWorldCard from "./adaptiveCards/helloworldCommand.json";
+import { MessageBuilder } from "./sdk/messageBuilder";
 
 export class HelloWorldCommandHandler implements TeamsFxBotCommandHandler {
-    commandNameOrPattern: string | RegExp = "helloWorld";
+    commandNameOrPattern: string | RegExp = "helloWorld";   // command?
 
-    async handleCommandReceived(context: TurnContext, commandText: string): Promise<BotMessage> {
+    async handleCommandReceived(context: TurnContext, receivedText: string): Promise<string | Partial<Activity>> {
         // verify the command arguments which are received from the client if needed.
 
         // do something to process your command and return an adaptive card or a text message.
-        return {
-            cardType: TeamsCardType.AdaptiveCard,
-            content: helloWorldCard
-        };
+        return MessageBuilder.attachAdaptiveCardWithoutData(helloWorldCard);
     }
 }
+
+

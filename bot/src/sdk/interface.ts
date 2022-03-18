@@ -9,31 +9,10 @@ export interface TeamsFxBotCommandHandler {
     /**
      * Handles a bot command received.
      * @param context The bot context.
-     * @param commandText The command text the user types from Teams.
-     * @returns a string represent the reponse message or an adapative card payload object.
+     * @param receivedText The command text the user types from Teams.
+     * @returns The activity or text to send as the command response.
      */
-    handleCommandReceived(context: TurnContext, commandText: string): Promise<BotMessage>;
+    handleCommandReceived(context: TurnContext, receivedText: string): Promise<string | Partial<Activity>>;
 }
 
 export type Json = Record<string, any>;
-export type AdaptiveCard = Json;
-
-export type BotMessage = string | CardMessage | Partial<Activity>;
-
-// Wee can extend the supported card types through this enum definition
-export enum TeamsCardType {
-    AdaptiveCard = 'application/vnd.microsoft.card.adaptive',
-    HeroCard = 'application/vnd.microsoft.card.hero',
-    ListCard = 'application/vnd.microsoft.teams.card.list',
-    signinCard = 'application/vnd.microsoft.card.signin'
-};
-
-export interface CardMessage {
-    cardType: TeamsCardType;
-    content: Json;
-}
-
-export function isCardMessage(object: unknown): object is CardMessage {
-    return Object.prototype.hasOwnProperty.call(object, "cardType")
-        && Object.prototype.hasOwnProperty.call(object, "content");
-}

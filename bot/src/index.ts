@@ -1,10 +1,9 @@
 // Create HTTP server.
-import { Activity, CardFactory, TeamsActivityHandler, TurnContext } from "botbuilder";
+import { CardFactory, TeamsActivityHandler } from "botbuilder";
 import * as restify from "restify";
 import { adapter } from "./internal/initialize";
 import crypto from "crypto"
 import adCard from "./adaptiveCards/helloworldCommand.json"
-import heroCard from "./adaptiveCards/heroCard.json"
 
 // Create HTTP server.
 const server = restify.createServer();
@@ -52,8 +51,7 @@ server.post("/api/command", (req, res) => {
                         attachments: [
                             CardFactory.adaptiveCard(adCard)                           
                         ]
-                    };
-                    
+                    };                   
                     break;
                 case (receivedText.indexOf("hero-card") != -1):
                     resMsg = {
