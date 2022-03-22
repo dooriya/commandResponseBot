@@ -48,6 +48,10 @@
                         {
                             "title": "help",
                             "description": "help command to get you started"
+                        },
+                        {
+                            "title": "show",
+                            "description": "Show user profile by calling Microsoft Graph API with SSO"
                         }
                     ]
                 }
