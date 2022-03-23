@@ -4,7 +4,7 @@ import helloWorldCard from "./adaptiveCards/helloworldCommand.json";
 import { MessageBuilder } from "./sdk/messageBuilder";
 
 export class HelloWorldCommandHandler implements TeamsFxBotCommandHandler {
-    commandNameOrPattern: string | RegExp = "helloWorld";   // command?
+    commandNameOrPattern: string | RegExp = "helloWorld";
 
     async handleCommandReceived(context: TurnContext, receivedText: string): Promise<string | Partial<Activity>> {
         // verify the command arguments which are received from the client if needed.
