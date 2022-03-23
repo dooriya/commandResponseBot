@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-import { Activity, TurnContext } from "botbuilder-core";
+import { Activity, TurnContext } from "botbuilder";
 
 /**
  * The target type where the notification will be sent to.
  *
  * @remarks
+ * Only work on server side.
  * - "Channel" means to a team channel. (By default, notification to a team will be sent to its "General" channel.)
  * - "Group" means to a group chat.
  * - "Person" means to a personal chat.
@@ -18,11 +19,17 @@ export type NotificationTargetType = "Channel" | "Group" | "Person";
 /**
  * Represent a notification target.
  *
+ * @remarks
+ * Only work on server side.
+ *
  * @beta
  */
 export interface NotificationTarget {
   /**
    * The type of target, could be "Channel" or "Group" or "Person".
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @beta
    */
@@ -30,6 +37,9 @@ export interface NotificationTarget {
 
   /**
    * Send a plain text message.
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @param text - the plain text message.
    *
@@ -39,6 +49,9 @@ export interface NotificationTarget {
 
   /**
    * Send an adaptive card message.
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @param card - the adaptive card raw JSON.
    *
@@ -50,11 +63,17 @@ export interface NotificationTarget {
 /**
  * Interface for a storage provider that stores and retrieves notification target references.
  *
+ * @remarks
+ * Only work on server side.
+ *
  * @beta
  */
 export interface NotificationTargetStorage {
   /**
    * Read one notification target by its key.
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @param key - the key of a notification target.
    *
@@ -62,10 +81,13 @@ export interface NotificationTargetStorage {
    *
    * @beta
    */
-  read(key: string): Promise<{ [key: string]: any } | undefined>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  read(key: string): Promise<{ [key: string]: any }>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /**
    * List all stored notification targets.
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @returns - an array of notification target. Or an empty array if nothing is stored.
    *
@@ -75,6 +97,9 @@ export interface NotificationTargetStorage {
 
   /**
    * Write one notification target by its key.
+   *
+   * @remarks
+   * Only work on server side.
    *
    * @param key - the key of a notification target.
    * @param object - the notification target.
@@ -86,6 +111,9 @@ export interface NotificationTargetStorage {
   /**
    * Deleta one notificaton target by its key.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param key - the key of a notification target.
    *
    * @beta
@@ -95,6 +123,9 @@ export interface NotificationTargetStorage {
 
 /**
  * Interface for a command handler thar can process command to a TeamsFx bot and return a response.
+ *
+ * @remarks
+ * Only work on server side.
  *
  * @beta
  */

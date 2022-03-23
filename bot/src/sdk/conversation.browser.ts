@@ -1,19 +1,22 @@
-import { BotFrameworkAdapter, TeamsInfo } from "botbuilder";
-import * as path from "path";
+import { BotFrameworkAdapter } from "botbuilder";
 import { NotificationTargetStorage, TeamsFxBotCommandHandler } from "./interface";
-import { CommandResponseMiddleware, NotificationMiddleware } from "./middleware";
+import { ConversationReferenceStore } from "./storage";
+import { ErrorWithCode, ErrorCode, ErrorMessage } from "../core/errors";
 import { TeamsBotInstallation } from "./notification";
-import { ConversationReferenceStore, LocalFileStorage } from "./storage";
+import { formatString } from "../util/utils";
 
 /**
  * Options to initialize {@link ConversationBot}.
+ *
+ * @remarks
+ * Only work on server side.
  *
  * @beta
  */
 export interface ConversationOptions {
   /**
    * A boolean, controlling whether to whether to include the notification feature.
-   * @defaultValue false
+   *
    * (default: `false`).
    */
   enableNotification?: boolean;
@@ -45,17 +48,16 @@ export interface ConversationOptions {
 }
 
 /**
- * Provide static utilities for bot conversation, including
- * - send notification to varies targets (e.g., member, channel, incoming wehbook)
- * - handle command and response.
+ * Provide static utilities for bot notification.
+ *
+ * @remarks
+ * Only work on server side.
  *
  * @example
  * Here's an example on how to send notification via Teams Bot.
  * ```typescript
  * // initialize (it's recommended to be called before handling any bot message)
- * ConversationBot.initialize(adapter, {
- *    enableNotification: true
- * });
+ * ConversationBot.initialize(adapter);
  *
  * // get all bot installations and send message
  * for (const target of await ConversationBot.installations()) {
@@ -73,6 +75,7 @@ export interface ConversationOptions {
  * @beta
  */
 export class ConversationBot {
+  private static readonly conversationReferenceStoreKey = "teamfx-notification-targets";
   private static conversationReferenceStore: ConversationReferenceStore;
   private static adapter: BotFrameworkAdapter;
 
@@ -80,6 +83,8 @@ export class ConversationBot {
    * Initialize bot notification.
    *
    * @remarks
+   * Only work on server side.
+   *
    * To ensure accuracy, it's recommended to initialize before handling any message.
    *
    * @param adapter - the bound `BotFrameworkAdapter`
@@ -88,31 +93,18 @@ export class ConversationBot {
    * @beta
    */
   public static initialize(adapter: BotFrameworkAdapter, options?: ConversationOptions) {
-    const storage =
-      options?.storage ??
-      new LocalFileStorage(
-        path.resolve(process.env.RUNNING_ON_AZURE === "1" ? process.env.TEMP ?? "./" : "./")
-      );
-
-    ConversationBot.adapter = adapter;
-    if (options?.enableNotification) {
-      ConversationBot.conversationReferenceStore = new ConversationReferenceStore(storage);
-      ConversationBot.adapter = adapter.use(
-        new NotificationMiddleware({
-          conversationReferenceStore: ConversationBot.conversationReferenceStore,
-        })
-      );
-    }
-
-    if (options?.commandHandlers) {
-      ConversationBot.adapter = adapter.use(new CommandResponseMiddleware(options.commandHandlers));
-    }
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "ConversationBot"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Get all targets where the bot is installed.
    *
    * @remarks
+   * Only work on server side.
+   *
    * The result is retrieving from the persisted storage.
    *
    * @returns - an array of {@link TeamsBotInstallation}.
@@ -120,36 +112,9 @@ export class ConversationBot {
    * @beta
    */
   public static async installations(): Promise<TeamsBotInstallation[]> {
-    if (
-      ConversationBot.conversationReferenceStore === undefined ||
-      ConversationBot.adapter === undefined
-    ) {
-      throw new Error("ConversationBot has not been initialized.");
-    }
-
-    const references = (await ConversationBot.conversationReferenceStore.getAll()).values();
-    const targets: TeamsBotInstallation[] = [];
-    for (const reference of references) {
-      // validate connection
-      let valid = true;
-      ConversationBot.adapter.continueConversation(reference, async (context) => {
-        try {
-          // try get member to see if the installation is still valid
-          await TeamsInfo.getPagedMembers(context, 1);
-        } catch (error) {
-          if ((error.code as string) === "BotNotInConversationRoster") {
-            valid = false;
-          }
-        }
-      });
-
-      if (valid) {
-        targets.push(new TeamsBotInstallation(ConversationBot.adapter, reference));
-      } else {
-        ConversationBot.conversationReferenceStore.delete(reference);
-      }
-    }
-
-    return targets;
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "ConversationBot"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 }

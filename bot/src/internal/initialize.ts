@@ -1,7 +1,7 @@
 // try better naming to hide for user
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
-import { BotConversation } from "../sdk/conversation";
+import { ConversationBot } from "../sdk/conversation";
 import { HelpCommandHandler } from "../helpCommandHandler";
 import { HelloWorldCommandHandler } from "../helloworldCommandHandler";
 
@@ -32,8 +32,6 @@ adapter.onTurnError = async (context: TurnContext, error: Error) => {
   await context.sendActivity("To continue to run this bot, please fix the bot source code.");
 };
 
-BotConversation.InitCommandResponse(adapter, [ new HelloWorldCommandHandler(), new HelpCommandHandler() ]);
-
-// BotConversation.Init(adapter, {
-//   commandHandlers: [ new HelloWorldCommandHandler(), new HelpCommandHandler() ]
-// });
+ConversationBot.initialize(adapter, {
+  commandHandlers: [new HelloWorldCommandHandler(), new HelpCommandHandler()]
+});
