@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 import { BotFrameworkAdapter, TeamsInfo } from "botbuilder";
 import * as path from "path";
 import { NotificationTargetStorage, TeamsFxBotCommandHandler } from "./interface";
@@ -136,7 +139,7 @@ export class ConversationBot {
         try {
           // try get member to see if the installation is still valid
           await TeamsInfo.getPagedMembers(context, 1);
-        } catch (error) {
+        } catch (error: any) {
           if ((error.code as string) === "BotNotInConversationRoster") {
             valid = false;
           }

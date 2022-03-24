@@ -12,7 +12,6 @@ enum ActivityType {
   CurrentBotInstalled,
   CurrentBotMessaged,
   CurrentBotUninstalled,
-  CurrentBotRemoved,
   TeamDeleted,
   TeamRestored,
   CommandReceived,
@@ -90,7 +89,7 @@ export class NotificationMiddleware implements Middleware {
 }
 
 export class CommandResponseMiddleware implements Middleware {
-  private commandHandlers: TeamsFxBotCommandHandler[] = [];
+  public commandHandlers: TeamsFxBotCommandHandler[] = [];
 
   constructor(handlers?: TeamsFxBotCommandHandler[]) {
     if (handlers && handlers.length > 0) {

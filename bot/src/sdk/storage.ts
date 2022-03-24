@@ -67,7 +67,7 @@ export class LocalFileStorage implements NotificationTargetStorage {
             resolve(true);
           }
         });
-      } catch (error) {
+      } catch (error: unknown) {
         resolve(false);
       }
     });
@@ -83,7 +83,7 @@ export class LocalFileStorage implements NotificationTargetStorage {
             resolve(JSON.parse(rawData));
           }
         });
-      } catch (error) {
+      } catch (error: unknown) {
         reject(error);
       }
     });
@@ -100,7 +100,7 @@ export class LocalFileStorage implements NotificationTargetStorage {
             resolve();
           }
         });
-      } catch (error) {
+      } catch (error: unknown) {
         reject(error);
       }
     });

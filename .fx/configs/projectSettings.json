@@ -19,5 +19,10 @@
             "fx-resource-appstudio"
         ]
     },
-    "programmingLanguage": "typescript"
+    "programmingLanguage": "typescript",
+    "pluginSettings": {
+        "fx-resource-bot": {
+            "capabilities": []
+        }
+    }
 }
