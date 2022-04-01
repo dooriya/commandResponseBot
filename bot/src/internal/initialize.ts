@@ -1,9 +1,9 @@
 // try better naming to hide for user
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
-import { ConversationBot } from "../sdk/conversation";
 import { HelpCommandHandler } from "../helpCommandHandler";
 import { HelloWorldCommandHandler } from "../helloworldCommandHandler";
+import { CommandBot } from "../sdk/command";
 
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
 export const adapter = new BotFrameworkAdapter({
@@ -32,6 +32,5 @@ adapter.onTurnError = async (context: TurnContext, error: Error) => {
   await context.sendActivity("To continue to run this bot, please fix the bot source code.");
 };
 
-ConversationBot.initialize(adapter, {
-  commandHandlers: [new HelloWorldCommandHandler(), new HelpCommandHandler()]
-});
+export const commandBot = new CommandBot(adapter, [ new HelloWorldCommandHandler() ]);
+commandBot.registerCommand(new HelpCommandHandler());
