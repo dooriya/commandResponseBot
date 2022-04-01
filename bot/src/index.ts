@@ -1,7 +1,8 @@
 // Create HTTP server.
 import { TeamsActivityHandler } from "botbuilder";
 import * as restify from "restify";
-import { adapter } from "./internal/initialize";
+import { commandBot } from "./internal/initialize";
+
 
 // Create HTTP server.
 const server = restify.createServer();
@@ -10,9 +11,11 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 });
 
 // Process Teams activity with Bot Framework.
-const handler = new TeamsActivityHandler();
-server.post("/api/messages", async (req, res) => {
-    await adapter.processActivity(req, res, async (context) => {
-        await handler.run(context);
-    });
-});
+// const handler = new TeamsActivityHandler();
+// server.post("/api/messages", async (req, res) => {
+//     await adapter.processActivity(req, res, async (context) => {
+//         await handler.run(context);
+//     });
+// });
+
+server.post(commandBot.defaultRoute, commandBot.requestMiddleware());

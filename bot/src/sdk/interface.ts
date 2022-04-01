@@ -84,7 +84,7 @@ export interface NotificationTargetStorage {
   write(key: string, object: { [key: string]: any }): Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /**
-   * Deleta one notificaton target by its key.
+   * Delete one notificaton target by its key.
    *
    * @param key - the key of a notification target.
    *
@@ -94,7 +94,7 @@ export interface NotificationTargetStorage {
 }
 
 /**
- * Interface for a command handler thar can process command to a TeamsFx bot and return a response.
+ * Interface for a command handler that can process command to a TeamsFx bot and return a response.
  *
  * @beta
  */

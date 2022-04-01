@@ -9,7 +9,7 @@ export interface HelpCardData {
 }
 
 export class HelpCommandHandler implements TeamsFxBotCommandHandler {
-    commandNameOrPattern: string | RegExp = /help*/;
+    commandNameOrPattern: string | RegExp = /^help[^\s|\w]?/;
 
     async handleCommandReceived(context: TurnContext, receivedText: string): Promise<string | Partial<Activity>> {
         // verify the command arguments which are received from the client if needed.
