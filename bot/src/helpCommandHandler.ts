@@ -11,7 +11,7 @@ export interface HelpCardData {
 export class HelpCommandHandler implements TeamsFxBotCommandHandler {
     triggerPatterns: TriggerPatterns = /^help (.*?)$/i;
 
-    async handleCommandReceived(context: TurnContext, message: CommandMessage): Promise<string | Partial<Activity>> {
+    async handleCommandReceived(context: TurnContext, message: CommandMessage): Promise<string | Partial<Activity> | void> {
         // verify the command arguments which are received from the client if needed.
         console.log(message.text);
         console.log(message.matches);
@@ -42,7 +42,7 @@ export class HelpCommandHandler implements TeamsFxBotCommandHandler {
             case (arg === "o365-card"):
                 return MessageBuilder.attachO365ConnectorCard({
                     title: "Card Title",
-                    text: "O365 connector card descrption"
+                    text: "O365 connector card description"
                 });
             case (arg === "list-card"):
                 return MessageBuilder.attachContent(listCard);

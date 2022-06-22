@@ -7,7 +7,7 @@ import helloWorldCard from "./adaptiveCards/helloworldCommand.json";
 export class HelloWorldCommandHandler implements TeamsFxBotCommandHandler {
     triggerPatterns: TriggerPatterns = ["helloWorld", "hi"];
 
-    async handleCommandReceived(context: TurnContext, message: CommandMessage): Promise<string | Partial<Activity>> {
+    async handleCommandReceived(context: TurnContext, message: CommandMessage): Promise<string | Partial<Activity> | void> {
         // verify the command arguments which are received from the client if needed.
         console.log(message.text);
 
@@ -33,6 +33,8 @@ export class HelloWorldCommandHandler implements TeamsFxBotCommandHandler {
             ]
         };
         
-        return MessageBuilder.attachAdaptiveCardWithoutData(payload);
+        //await context.sendActivity(`Hi ${context.activity.from.name}!`);
+        //await context.sendActivity(MessageBuilder.attachAdaptiveCardWithoutData(payload));
+        return MessageBuilder.attachAdaptiveCardWithoutData(helloWorldCard);
     }
 }

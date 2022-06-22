@@ -3,62 +3,79 @@
 
 import {
   BotFrameworkAdapter,
-  CardFactory,
   ChannelInfo,
-  ConversationParameters,
   ConversationReference,
   TeamsChannelAccount,
-  TeamsInfo,
-  TurnContext,
 } from "botbuilder";
-import { ConnectorClient } from "botframework-connector";
-import * as path from "path";
-import { NotificationTarget, NotificationTargetType, NotificationOptions } from "./interface";
-import { NotificationMiddleware } from "./middleware";
-import { ConversationReferenceStore, LocalFileStorage } from "./storage";
-import * as utils from "./utils";
+import { ErrorWithCode, ErrorCode, ErrorMessage } from "../core/errors";
+import { formatString } from "../util/utils";
+import { NotificationTarget, NotificationTargetType } from "./interface";
+import { ConversationReferenceStore } from "./storage";
 
 /**
  * Send a plain text message to a notification target.
+ *
+ * @remarks
+ * Only work on server side.
  *
  * @param target - the notification target.
  * @param text - the plain text message.
  * @returns A `Promise` representing the asynchronous operation.
  */
 export function sendMessage(target: NotificationTarget, text: string): Promise<void> {
-  return target.sendMessage(text);
+  throw new ErrorWithCode(
+    formatString(ErrorMessage.BrowserRuntimeNotSupported, "sendMessage"),
+    ErrorCode.RuntimeNotSupported
+  );
 }
 
 /**
  * Send an adaptive card message to a notification target.
+ *
+ * @remarks
+ * Only work on server side.
  *
  * @param target - the notification target.
  * @param card - the adaptive card raw JSON.
  * @returns A `Promise` representing the asynchronous operation.
  */
 export function sendAdaptiveCard(target: NotificationTarget, card: unknown): Promise<void> {
-  return target.sendAdaptiveCard(card);
+  throw new ErrorWithCode(
+    formatString(ErrorMessage.BrowserRuntimeNotSupported, "sendAdaptiveCard"),
+    ErrorCode.RuntimeNotSupported
+  );
 }
 
 /**
  * A {@link NotificationTarget} that represents a team channel.
  *
  * @remarks
+ * Only work on server side.
+ *
  * It's recommended to get channels from {@link TeamsBotInstallation.channels()}.
  */
 export class Channel implements NotificationTarget {
   /**
    * The parent {@link TeamsBotInstallation} where this channel is created from.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly parent: TeamsBotInstallation;
 
   /**
    * Detailed channel information.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly info: ChannelInfo;
 
   /**
    * Notification target type. For channel it's always "Channel".
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly type: NotificationTargetType = "Channel";
 
@@ -66,63 +83,50 @@ export class Channel implements NotificationTarget {
    * Constructor.
    *
    * @remarks
+   * Only work on server side.
+   *
    * It's recommended to get channels from {@link TeamsBotInstallation.channels()}, instead of using this constructor.
    *
    * @param parent - The parent {@link TeamsBotInstallation} where this channel is created from.
    * @param info - Detailed channel information.
    */
   constructor(parent: TeamsBotInstallation, info: ChannelInfo) {
-    this.parent = parent;
-    this.info = info;
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Channel"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Send a plain text message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param text - the plain text message.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public sendMessage(text: string): Promise<void> {
-    return this.parent.adapter.continueConversation(
-      this.parent.conversationReference,
-      async (context) => {
-        const conversation = await this.newConversation(context);
-        await this.parent.adapter.continueConversation(conversation, async (ctx: TurnContext) => {
-          await ctx.sendActivity(text);
-        });
-      }
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Channel"),
+      ErrorCode.RuntimeNotSupported
     );
   }
 
   /**
    * Send an adaptive card message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param card - the adaptive card raw JSON.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public async sendAdaptiveCard(card: unknown): Promise<void> {
-    return this.parent.adapter.continueConversation(
-      this.parent.conversationReference,
-      async (context) => {
-        const conversation = await this.newConversation(context);
-        await this.parent.adapter.continueConversation(conversation, async (ctx: TurnContext) => {
-          await ctx.sendActivity({
-            attachments: [CardFactory.adaptiveCard(card)],
-          });
-        });
-      }
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Channel"),
+      ErrorCode.RuntimeNotSupported
     );
-  }
-
-  /**
-   * @internal
-   */
-  private async newConversation(context: TurnContext): Promise<ConversationReference> {
-    const reference = TurnContext.getConversationReference(context.activity);
-    const channelConversation = utils.cloneConversation(reference);
-    channelConversation.conversation.id = this.info.id || "";
-
-    return channelConversation;
   }
 }
 
@@ -130,21 +134,32 @@ export class Channel implements NotificationTarget {
  * A {@link NotificationTarget} that represents a team member.
  *
  * @remarks
+ * Only work on server side.
+ *
  * It's recommended to get members from {@link TeamsBotInstallation.members()}.
  */
 export class Member implements NotificationTarget {
   /**
    * The parent {@link TeamsBotInstallation} where this member is created from.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly parent: TeamsBotInstallation;
 
   /**
    * Detailed member account information.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly account: TeamsChannelAccount;
 
   /**
    * Notification target type. For member it's always "Person".
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly type: NotificationTargetType = "Person";
 
@@ -152,74 +167,50 @@ export class Member implements NotificationTarget {
    * Constructor.
    *
    * @remarks
+   * Only work on server side.
+   *
    * It's recommended to get members from {@link TeamsBotInstallation.members()}, instead of using this constructor.
    *
    * @param parent - The parent {@link TeamsBotInstallation} where this member is created from.
    * @param account - Detailed member account information.
    */
   constructor(parent: TeamsBotInstallation, account: TeamsChannelAccount) {
-    this.parent = parent;
-    this.account = account;
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Member"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Send a plain text message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param text - the plain text message.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public sendMessage(text: string): Promise<void> {
-    return this.parent.adapter.continueConversation(
-      this.parent.conversationReference,
-      async (context) => {
-        const conversation = await this.newConversation(context);
-        await this.parent.adapter.continueConversation(conversation, async (ctx: TurnContext) => {
-          await ctx.sendActivity(text);
-        });
-      }
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Member"),
+      ErrorCode.RuntimeNotSupported
     );
   }
 
   /**
    * Send an adaptive card message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param card - the adaptive card raw JSON.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public async sendAdaptiveCard(card: unknown): Promise<void> {
-    return this.parent.adapter.continueConversation(
-      this.parent.conversationReference,
-      async (context) => {
-        const conversation = await this.newConversation(context);
-        await this.parent.adapter.continueConversation(conversation, async (ctx: TurnContext) => {
-          await ctx.sendActivity({
-            attachments: [CardFactory.adaptiveCard(card)],
-          });
-        });
-      }
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "Member"),
+      ErrorCode.RuntimeNotSupported
     );
-  }
-
-  /**
-   * @internal
-   */
-  private async newConversation(context: TurnContext): Promise<ConversationReference> {
-    const reference = TurnContext.getConversationReference(context.activity);
-    const personalConversation = utils.cloneConversation(reference);
-
-    const connectorClient: ConnectorClient = context.turnState.get(
-      this.parent.adapter.ConnectorClientKey
-    );
-    const conversation = await connectorClient.conversations.createConversation({
-      isGroup: false,
-      tenantId: context.activity.conversation.tenantId,
-      bot: context.activity.recipient,
-      members: [this.account],
-      channelData: {},
-    } as ConversationParameters);
-    personalConversation.conversation.id = conversation.id;
-
-    return personalConversation;
   }
 }
 
@@ -230,16 +221,24 @@ export class Member implements NotificationTarget {
  * - Team (by default the `General` channel)
  *
  * @remarks
+ * Only work on server side.
+ *
  * It's recommended to get bot installations from {@link ConversationBot.installations()}.
  */
 export class TeamsBotInstallation implements NotificationTarget {
   /**
    * The bound `BotFrameworkAdapter`.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly adapter: BotFrameworkAdapter;
 
   /**
    * The bound `ConversationReference`.
+   *
+   * @remarks
+   * Only work on server side.
    */
   public readonly conversationReference: Partial<ConversationReference>;
 
@@ -247,6 +246,7 @@ export class TeamsBotInstallation implements NotificationTarget {
    * Notification target type.
    *
    * @remarks
+   * Only work on server side.
    * - "Channel" means bot is installed into a team and notification will be sent to its "General" channel.
    * - "Group" means bot is installed into a group chat.
    * - "Person" means bot is installed into a personal scope and notification will be sent to personal chat.
@@ -257,89 +257,107 @@ export class TeamsBotInstallation implements NotificationTarget {
    * Constructor
    *
    * @remarks
+   * Only work on server side.
+   *
    * It's recommended to get bot installations from {@link ConversationBot.installations()}, instead of using this constructor.
    *
    * @param adapter - the bound `BotFrameworkAdapter`.
    * @param conversationReference - the bound `ConversationReference`.
    */
   constructor(adapter: BotFrameworkAdapter, conversationReference: Partial<ConversationReference>) {
-    this.adapter = adapter;
-    this.conversationReference = conversationReference;
-    this.type = utils.getTargetType(conversationReference);
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "TeamsBotInstallation"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Send a plain text message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param text - the plain text message.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public sendMessage(text: string): Promise<void> {
-    return this.adapter.continueConversation(this.conversationReference, async (context) => {
-      await context.sendActivity(text);
-    });
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "TeamsBotInstallation"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Send an adaptive card message.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @param card - the adaptive card raw JSON.
    * @returns A `Promise` representing the asynchronous operation.
    */
   public sendAdaptiveCard(card: unknown): Promise<void> {
-    return this.adapter.continueConversation(this.conversationReference, async (context) => {
-      await context.sendActivity({
-        attachments: [CardFactory.adaptiveCard(card)],
-      });
-    });
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "TeamsBotInstallation"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Get channels from this bot installation.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @returns an array of channels if bot is installed into a team, otherwise returns an empty array.
    */
   public async channels(): Promise<Channel[]> {
-    let teamsChannels: ChannelInfo[] = [];
-    await this.adapter.continueConversation(this.conversationReference, async (context) => {
-      const teamId = utils.getTeamsBotInstallationId(context);
-      if (teamId !== undefined) {
-        teamsChannels = await TeamsInfo.getTeamChannels(context, teamId);
-      }
-    });
-
-    const channels: Channel[] = [];
-    for (const channel of teamsChannels) {
-      channels.push(new Channel(this, channel));
-    }
-
-    return channels;
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "TeamsBotInstallation"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 
   /**
    * Get members from this bot installation.
    *
+   * @remarks
+   * Only work on server side.
+   *
    * @returns an array of members from where the bot is installed.
    */
   public async members(): Promise<Member[]> {
-    const members: Member[] = [];
-    await this.adapter.continueConversation(this.conversationReference, async (context) => {
-      let continuationToken: string | undefined;
-      do {
-        const pagedMembers = await TeamsInfo.getPagedMembers(context, undefined, continuationToken);
-        continuationToken = pagedMembers.continuationToken;
-        for (const member of pagedMembers.members) {
-          members.push(new Member(this, member));
-        }
-      } while (continuationToken !== undefined);
-    });
-
-    return members;
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "TeamsBotInstallation"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 }
 
 /**
- * Provide utilities to send notification to varies targets (e.g., member, group, channel).
+ * Provide static utilities for bot notification.
+ *
+ * @remarks
+ * Only work on server side.
+ *
+ * @example
+ * Here's an example on how to send notification via Teams Bot.
+ * ```typescript
+ * // initialize (it's recommended to be called before handling any bot message)
+ * const notificationBot = new NotificationBot(adapter);
+ *
+ * // get all bot installations and send message
+ * for (const target of await notificationBot.installations()) {
+ *   await target.sendMessage("Hello Notification");
+ * }
+ *
+ * // alternative - send message to all members
+ * for (const target of await notificationBot.installations()) {
+ *   for (const member of await target.members()) {
+ *     await member.sendMessage("Hello Notification");
+ *   }
+ * }
+ * ```
  */
 export class NotificationBot {
   private readonly conversationReferenceStore: ConversationReferenceStore;
@@ -349,23 +367,17 @@ export class NotificationBot {
    * constructor of the notification bot.
    *
    * @remarks
+   * Only work on server side.
+   *
    * To ensure accuracy, it's recommended to initialize before handling any message.
    *
    * @param adapter - the bound `BotFrameworkAdapter`
    * @param options - initialize options
    */
   public constructor(adapter: BotFrameworkAdapter, options?: NotificationOptions) {
-    const storage =
-      options?.storage ??
-      new LocalFileStorage(
-        path.resolve(process.env.RUNNING_ON_AZURE === "1" ? process.env.TEMP ?? "./" : "./")
-      );
-
-    this.conversationReferenceStore = new ConversationReferenceStore(storage);
-    this.adapter = adapter.use(
-      new NotificationMiddleware({
-        conversationReferenceStore: this.conversationReferenceStore,
-      })
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "NotificationBot"),
+      ErrorCode.RuntimeNotSupported
     );
   }
 
@@ -373,38 +385,16 @@ export class NotificationBot {
    * Get all targets where the bot is installed.
    *
    * @remarks
+   * Only work on server side.
+   *
    * The result is retrieving from the persisted storage.
    *
    * @returns - an array of {@link TeamsBotInstallation}.
    */
-  public async installations(): Promise<TeamsBotInstallation[]> {
-    if (this.conversationReferenceStore === undefined || this.adapter === undefined) {
-      throw new Error("NotificationBot has not been initialized.");
-    }
-
-    const references = await this.conversationReferenceStore.getAll();
-    const targets: TeamsBotInstallation[] = [];
-    for (const reference of references) {
-      // validate connection
-      let valid = true;
-      await this.adapter.continueConversation(reference, async (context) => {
-        try {
-          // try get member to see if the installation is still valid
-          await TeamsInfo.getPagedMembers(context, 1);
-        } catch (error: any) {
-          if ((error.code as string) === "BotNotInConversationRoster") {
-            valid = false;
-          }
-        }
-      });
-
-      if (valid) {
-        targets.push(new TeamsBotInstallation(this.adapter, reference));
-      } else {
-        await this.conversationReferenceStore.delete(reference);
-      }
-    }
-
-    return targets;
+  public static async installations(): Promise<TeamsBotInstallation[]> {
+    throw new ErrorWithCode(
+      formatString(ErrorMessage.BrowserRuntimeNotSupported, "NotificationBot"),
+      ErrorCode.RuntimeNotSupported
+    );
   }
 }
